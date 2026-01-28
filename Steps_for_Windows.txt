@@ -1,26 +1,137 @@
-Create virtual environment:
+▶ How to Run the Wi-Fi Security Audit Tool (Windows)
+1️⃣ Install Prerequisites
 
-text
+Make sure you have:
+
+✅ Python 3.10 or higher
+Check:
+
+python --version
+
+
+✅ Git (optional, for cloning)
+
+2️⃣ Clone the Project
+git clone https://github.com/yourusername/wifi-security-audit-tool.git
+cd wifi-security-audit-tool
+
+
+(Or download ZIP and extract.)
+
+3️⃣ Create Virtual Environment
 python -m venv venv
-Activate the virtual environment:
 
-text
-.\venv\Scripts\Activate.ps1
-If you get an error about execution policy, you might need to run:
+4️⃣ Enable Script Execution (Only once)
 
-text
+If activation fails, run:
+
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
-Then try activating again.
 
-Install the requirements:
 
-text
+Press Y to confirm.
+
+5️⃣ Activate Virtual Environment
+.\venv\Scripts\Activate.ps1
+
+
+You should see:
+
+(venv) PS C:\wifi-security-audit-tool>
+
+6️⃣ Install Project Dependencies
 pip install -r requirements.txt
-Run the tool:
 
-text
+
+If requirements.txt does not exist, create one with:
+
+streamlit
+jinja2
+pyyaml
+pandas
+numpy
+pdfkit
+
+
+Then install again.
+
+7️⃣ Run Backend Logic (Optional)
+
+If your project uses main.py:
+
 python main.py
 
 
-ui
+(This is optional if everything is controlled from UI)
+
+8️⃣ Launch Web Interface (Recommended)
 streamlit run ui.py
+
+9️⃣ Open in Browser
+
+Streamlit will automatically open:
+
+http://localhost:8501
+
+
+If not, open it manually in your browser.
+
+10️⃣ Generate Reports
+
+Inside the UI:
+
+Select adapter
+
+Scan networks
+
+Run analysis
+
+Click Save Evidence & Generate Report
+
+Files will be created in:
+
+/reports   → HTML reports
+/evidence  → JSON evidence
+
+🧾 Optional: Enable PDF Reports
+Install wkhtmltopdf
+
+Download from:
+https://wkhtmltopdf.org/downloads.html
+
+Add to PATH or install to:
+
+C:\Program Files\wkhtmltopdf\bin
+
+
+Verify:
+
+wkhtmltopdf --version
+
+🛠 Common Errors & Fixes
+❌ PowerShell execution disabled
+
+Fix:
+
+Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+
+❌ Streamlit not found
+
+Fix:
+
+pip install streamlit
+
+❌ Module not found
+
+Fix:
+
+pip install -r requirements.txt
+
+🔐 Legal Note
+
+Use only in:
+
+Lab environments
+
+Your own networks
+
+Authorized testing
