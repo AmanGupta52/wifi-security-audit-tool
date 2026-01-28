@@ -1,0 +1,26 @@
+Create virtual environment:
+
+text
+python -m venv venv
+Activate the virtual environment:
+
+text
+.\venv\Scripts\Activate.ps1
+If you get an error about execution policy, you might need to run:
+
+text
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+Then try activating again.
+
+Install the requirements:
+
+text
+pip install -r requirements.txt
+Run the tool:
+
+text
+python main.py
+
+
+ui
+streamlit run ui.py

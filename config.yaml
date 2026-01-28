@@ -1,0 +1,36 @@
+# 📄 config.yaml
+lab_settings:
+  target_networks:
+    - ssid: "LabNet"
+      bssid: "AA:BB:CC:DD:EE:FF"
+      encryption: "WPA2"
+      channel: 6
+      
+    - ssid: "Guest_WiFi"
+      bssid: "11:22:33:44:55:66"
+      encryption: "WPA"
+      channel: 1
+
+  simulation_mode: false
+  simulation_speed: "normal"  # fast, normal, slow
+  
+  password_dictionaries:
+    weak_passwords:
+      - "password123"
+      - "admin123"
+      - "12345678"
+      - "qwerty"
+    
+    common_passwords:
+      - "Summer2023!"
+      - "Welcome123"
+      - "Password1"
+      - "WiFi@Home"
+
+  report_settings:
+    include_recommendations: true
+    risk_thresholds:
+      critical: 9
+      high: 7
+      medium: 5
+      low: 3

@@ -1,0 +1,1 @@
+I have written authorization to test this Wi-Fi network in a lab environment.

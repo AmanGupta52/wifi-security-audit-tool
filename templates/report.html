@@ -1,0 +1,334 @@
+<!-- 📄 templates/report.html -->
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Wi-Fi Security Audit Report</title>
+    <style>
+        :root {
+            --critical: #dc3545;
+            --high: #fd7e14;
+            --medium: #ffc107;
+            --low: #28a745;
+            --info: #17a2b8;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        header {
+            border-bottom: 3px solid #007bff;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .risk-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            color: white;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .risk-critical {
+            background: var(--critical);
+        }
+
+        .risk-high {
+            background: var(--high);
+        }
+
+        .risk-medium {
+            background: var(--medium);
+        }
+
+        .risk-low {
+            background: var(--low);
+        }
+
+        .card {
+            background: #f8f9fa;
+            border-left: 4px solid #007bff;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 5px 5px 0;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .metric {
+            background: white;
+            border: 1px solid #dee2e6;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 2em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .recommendation {
+            background: #e7f3ff;
+            border-left: 4px solid #007bff;
+            padding: 15px;
+            margin: 10px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background: #007bff;
+            color: white;
+        }
+
+        .progress-bar {
+            height: 10px;
+            background: #e9ecef;
+            border-radius: 5px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+
+        footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            text-align: center;
+            color: #666;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>📡 Wi-Fi Security Audit Report</h1>
+            <p>Generated: {{ data.timestamp }}</p>
+            <p>Audit Duration: {{ "%.2f"|format(data.duration) }} seconds</p>
+        </header>
+
+        <section>
+            <h2>🎯 Target Network</h2>
+            <div class="card">
+                <p><strong>SSID:</strong> {{ data.target.ssid }}</p>
+                <p><strong>BSSID:</strong> {{ data.target.bssid }}</p>
+                <p><strong>Vendor:</strong> {{ data.target.get('vendor', 'Unknown') }}</p>
+                <p><strong>Channel:</strong> {{ data.target.channel }}</p>
+                <p><strong>Signal:</strong> {{ data.target.signal }} dBm</p>
+            </div>
+        </section>
+
+        <section>
+            <h2>📊 Security Assessment</h2>
+            <div class="grid">
+                <div class="metric">
+                    <h3>Overall Risk</h3>
+                    <div class="metric-value risk-{{ data.risk.level|lower }}">
+                        {{ data.risk.level }}
+                    </div>
+                    <p>Score: {{ data.risk.score }}/15</p>
+                    <div class="progress-bar">
+                        <div class="progress-fill risk-{{ data.risk.level|lower }}" style="width: 3px;"></div>
+                    </div>
+                </div>
+
+                <div class="metric">
+                    <h3>Encryption</h3>
+                    <div class="metric-value">{{ data.encryption.type }}</div>
+                    <p>Severity: {{ data.encryption.severity }}</p>
+                </div>
+
+                <div class="metric">
+                    <h3>Password Strength</h3>
+                    <div class="metric-value">{{ data.password.strength }}</div>
+                    <p>Crack time: {{ data.password.estimated_crack_days }} days</p>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>🔍 Detailed Findings</h2>
+
+            <h3>Encryption Analysis</h3>
+            <table>
+                <tr>
+                    <th>Type</th>
+                    <th>Security Level</th>
+                    <th>Score</th>
+                </tr>
+                <tr>
+                    <td>{{ data.encryption.type }}</td>
+                    <td>{{ data.encryption.severity }}</td>
+                    <td>{{ data.encryption.score }}/9</td>
+                </tr>
+            </table>
+
+            <h3>Protection Mechanisms</h3>
+            <table>
+                <tr>
+                    <th>Feature</th>
+                    <th>Status</th>
+                    <th>Recommendation</th>
+                </tr>
+                <tr>
+                    <td>PMF (802.11w)</td>
+                    <td>{{ "✅ Enabled" if data.protection.pmf_enabled else "❌ Disabled" }}</td>
+                    <td>{{ "Good" if data.protection.pmf_enabled else "Enable for management frame protection" }}</td>
+                </tr>
+                <tr>
+                    <td>WPS</td>
+                    <td>{{ "✅ Enabled" if data.protection.wps_enabled else "❌ Disabled" }}</td>
+                    <td>{{ "Disable - vulnerable to brute force" if data.protection.wps_enabled else "Good" }}</td>
+                </tr>
+            </table>
+
+            <h3>Password Analysis</h3>
+            <table>
+                <tr>
+                    <th>Metric</th>
+                    <th>Value</th>
+                    <th>Assessment</th>
+                </tr>
+                <tr>
+                    <td>Strength</td>
+                    <td>{{ data.password.strength }}</td>
+                    <td>{{ "Needs improvement" if data.password.strength in ["Weak", "Very Weak"] else "Acceptable" }}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Entropy</td>
+                    <td>{{ data.password.entropy_bits }} bits</td>
+                    <td>{{ "Low" if data.password.entropy_bits < 40 else "Adequate" if data.password.entropy_bits < 60
+                            else "Good" }}</td>
+                </tr>
+            </table>
+        </section>
+
+        <section>
+            <h2>💡 Recommendations</h2>
+
+            <div class="recommendation">
+                <h3>🛡️ Immediate Actions (if Risk is Critical/High)</h3>
+                <ul>
+                    {% if data.encryption.type in ["WEP", "OPEN", "WPA"] %}
+                    <li>Upgrade to WPA2/WPA3 encryption immediately</li>
+                    {% endif %}
+                    {% if data.protection.wps_enabled %}
+                    <li>Disable WPS in router settings</li>
+                    {% endif %}
+                    {% if data.password.strength in ["Weak", "Very Weak"] %}
+                    <li>Change password to 12+ characters with mix of upper/lower/special chars</li>
+                    {% endif %}
+                </ul>
+            </div>
+
+            <div class="recommendation">
+                <h3>🔧 Configuration Improvements</h3>
+                <ul>
+                    <li>Enable WPA3 if supported by all devices</li>
+                    <li>Enable 802.11w (PMF) for management frame protection</li>
+                    <li>Change default admin credentials on router</li>
+                    <li>Disable remote administration</li>
+                    <li>Regular firmware updates</li>
+                    <li>Consider implementing RADIUS authentication for enterprise use</li>
+                </ul>
+            </div>
+
+            <div class="recommendation">
+                <h3>📈 Best Practices</h3>
+                <ul>
+                    <li>Use minimum 12-character complex passwords</li>
+                    <li>Implement regular password rotation policies</li>
+                    <li>Separate guest network from main network</li>
+                    <li>Enable client isolation on guest networks</li>
+                    <li>Monitor for unauthorized access attempts</li>
+                    <li>Regular security audits (quarterly recommended)</li>
+                </ul>
+            </div>
+        </section>
+
+        <footer>
+            <p><strong>Disclaimer:</strong> This report is for educational purposes in lab environments only.</p>
+            <p>Unauthorized testing of networks is illegal. Always obtain proper authorization.</p>
+            <p>Report generated by Wi-Fi Security Audit Tool (Simulation Mode)</p>
+        </footer>
+    </div>
+
+    <script>
+        // Add interactivity
+        document.addEventListener('DOMContentLoaded', function () {
+            // Color code risk badges
+            const riskElements = document.querySelectorAll('.metric-value');
+            riskElements.forEach(el => {
+                if (el.textContent.includes('Critical')) {
+                    el.style.color = 'var(--critical)';
+                } else if (el.textContent.includes('High')) {
+                    el.style.color = 'var(--high)';
+                } else if (el.textContent.includes('Medium')) {
+                    el.style.color = 'var(--medium)';
+                } else if (el.textContent.includes('Low')) {
+                    el.style.color = 'var(--low)';
+                }
+            });
+
+            // Print functionality
+            const printBtn = document.createElement('button');
+            printBtn.textContent = '🖨️ Print Report';
+            printBtn.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                padding: 10px 20px;
+                background: #007bff;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+            `;
+            printBtn.onclick = () => window.print();
+            document.body.appendChild(printBtn);
+        });
+    </script>
+</body>
+
+</html>

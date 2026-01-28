@@ -1,0 +1,23 @@
+wifi_audit/
+│
+├── main.py
+├── config.yaml
+├── authorization.txt
+│
+├── modules/
+│   ├── adapter_manager.py
+│   ├── network_scanner.py
+│   ├── encryption_analyzer.py
+│   ├── handshake_test.py
+│   ├── protection_test.py
+│   ├── password_audit.py
+│   ├── risk_engine.py
+│   ├── evidence_collector.py
+│   └── report_generator.py
+│
+├── templates/
+│   └── report.html
+│
+├── reports/
+├── evidence/
+└── logs/
