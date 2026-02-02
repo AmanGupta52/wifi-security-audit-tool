@@ -1,0 +1,55 @@
+{
+    "adapter": {
+        "adapter": "wlan0",
+        "supports_monitor": true,
+        "driver": "ath9k"
+    },
+    "target": {
+        "ssid": "realme 9 Pro+",
+        "bssid": "86:4a:39:d1:b3:0c",
+        "channel": 5,
+        "signal": 90,
+        "encryption": "WPA3-Personal",
+        "vendor": "Unknown",
+        "last_seen": "21:48:34"
+    },
+    "encryption": {
+        "type": "WPA3-Personal",
+        "severity": "Unknown",
+        "score": 5
+    },
+    "handshake": {
+        "handshake_possible": true,
+        "time_seconds": 7,
+        "packet_count": 714,
+        "success_probability": 95.0,
+        "recommended_tools": [
+            "specific tools"
+        ],
+        "notes": "Simulated handshake capture test"
+    },
+    "protection": {
+        "pmf_enabled": false,
+        "wps_enabled": true,
+        "rate_limiting": true,
+        "hidden_ssid": true,
+        "mac_filtering": false,
+        "isolation_enabled": false
+    },
+    "password": {
+        "strength": "Strong",
+        "entropy_bits": 70,
+        "estimated_crack_days": 1095,
+        "risk_score": 0,
+        "factors": [],
+        "recommended_length": 12,
+        "has_special_char": true,
+        "has_numbers": true
+    },
+    "risk": {
+        "score": 9,
+        "level": "High"
+    },
+    "timestamp": "2026-01-28T21:48:34.315368",
+    "duration": 0.001256
+}

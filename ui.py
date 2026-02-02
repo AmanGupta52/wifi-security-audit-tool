@@ -11,11 +11,31 @@ from modules.report_generator import ReportGenerator
 from datetime import datetime
 import os
 import pdfkit
-from datetime import datetime
+import pandas as pd
 
 st.set_page_config(page_title="Wi-Fi Security Audit Tool", layout="wide")
 
 st.title("🔒 Wi-Fi Security Audit Tool (Lab Simulation)")
+
+# -----------------------------
+# Helper: Flatten networks
+# -----------------------------
+def flatten_networks(networks):
+    rows = []
+    for net in networks:
+        for ap in net["bssids"]:
+            rows.append({
+                "SSID": net["ssid"],
+                "Encryption": net["encryption"],
+                "BSSID": ap["bssid"],
+                "Vendor": ap["vendor"],
+                "Signal (%)": ap["signal"],
+                "Channel": ap["channel"],
+                "Band": ap["band"],
+                "Last Seen": net["last_seen"]
+            })
+    return rows
+
 
 # -----------------------------
 # Step 1: Adapter Info
@@ -35,16 +55,20 @@ if not networks:
     st.warning("No networks found.")
     st.stop()
 
-# Display networks in table
-import pandas as pd
-net_df = pd.DataFrame(networks)
-st.dataframe(net_df[["ssid", "bssid", "channel", "signal", "encryption", "vendor", "last_seen"]])
+# Display networks table
+flat_data = flatten_networks(networks)
+net_df = pd.DataFrame(flat_data)
 
+st.dataframe(net_df, use_container_width=True)
+
+# -----------------------------
 # Network selection
-ssid_options = [net["ssid"] for net in networks]
+# -----------------------------
+ssid_options = sorted(set(net["ssid"] for net in networks))
 selected_ssid = st.selectbox("Select Target Network", ssid_options)
+
 target = next(net for net in networks if net["ssid"] == selected_ssid)
-st.success(f"Selected Network: {target['ssid']}")
+st.success(f"Selected Network: {target['ssid']}  |  APs: {len(target['bssids'])}")
 
 # -----------------------------
 # Step 3: Encryption Analysis
@@ -77,6 +101,7 @@ password = PasswordAudit().run(target)
 st.write(f"Strength: {password['strength']}")
 st.write(f"Entropy Bits: {password['entropy_bits']}")
 st.write(f"Estimated Crack Time (days): {password['estimated_crack_days']}")
+
 st.write("Factors affecting password strength:")
 for f in password.get("factors", []):
     st.write(f"- {f}")
@@ -110,11 +135,9 @@ if st.button("✅ Save Evidence & Generate HTML Report"):
         "duration": (datetime.now() - start_time).total_seconds()
     }
 
-    # Save evidence
     EvidenceCollector().save(data)
 
-    # Generate HTML report
-    report_html_path = ReportGenerator().generate(data)  # Make sure this returns the HTML file path
+    report_html_path = ReportGenerator().generate(data)
     st.success(f"✅ Report generated: {report_html_path}")
 
     # Preview HTML
@@ -123,7 +146,7 @@ if st.button("✅ Save Evidence & Generate HTML Report"):
         st.subheader("📄 Report Preview")
         st.components.v1.html(html_content, height=600, scrolling=True)
 
-    # Generate PDF from HTML
+    # Generate PDF
     report_pdf_path = report_html_path.replace(".html", ".pdf")
     try:
         pdfkit.from_file(report_html_path, report_pdf_path)

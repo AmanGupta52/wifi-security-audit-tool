@@ -1,9 +1,13 @@
-# modules/network_scanner.py
+# modules/network_scanner.py 
+
 import subprocess
 import re
 import yaml
 import os
+import json
+import csv
 from datetime import datetime
+
 
 class NetworkScanner:
     def __init__(self):
@@ -15,11 +19,19 @@ class NetworkScanner:
 
         self.simulation = self.config.get("lab_settings", {}).get("simulation_mode", False)
 
+        self.export_dir = os.path.join(base_dir, "reports")
+        os.makedirs(self.export_dir, exist_ok=True)
+
     def scan(self):
         if self.simulation:
-            return self._scan_simulated()
+            networks = self._scan_simulated()
         else:
-            return self._scan_windows_real()
+            networks = self._scan_windows_real()
+
+        self.export_json(networks)
+        self.export_csv(networks)
+
+        return networks
 
     # ===============================
     # REAL WINDOWS WIFI SCANNER
@@ -30,79 +42,142 @@ class NetworkScanner:
         cmd = ["netsh", "wlan", "show", "networks", "mode=bssid"]
         output = subprocess.check_output(cmd, shell=True, text=True, encoding="utf-8", errors="ignore")
 
-        networks = []
-        current = {}
+        networks = {}
+        current_ssid = None
+        current_bssid = None
 
         for line in output.splitlines():
             line = line.strip()
 
             if line.startswith("SSID "):
-                if current:
-                    networks.append(current)
-
                 ssid = line.split(":", 1)[1].strip()
-                current = {
-                    "ssid": ssid,
-                    "bssid": None,
-                    "channel": None,
-                    "signal": None,
-                    "encryption": None,
-                    "vendor": None,
-                    "last_seen": datetime.now().strftime("%H:%M:%S")
-                }
+                current_ssid = ssid
 
-            elif line.startswith("BSSID"):
+                if ssid not in networks:
+                    networks[ssid] = {
+                        "ssid": ssid,
+                        "encryption": None,
+                        "bssids": [],
+                        "last_seen": datetime.now().strftime("%H:%M:%S")
+                    }
+
+            elif line.startswith("Authentication") and current_ssid:
+                raw = line.split(":", 1)[1].strip()
+                networks[current_ssid]["encryption"] = self.normalize_encryption(raw)
+
+            elif line.startswith("BSSID") and current_ssid:
                 bssid = line.split(":", 1)[1].strip()
-                current["bssid"] = bssid
-                current["vendor"] = self.get_vendor_from_bssid(bssid)
+                current_bssid = {
+                    "bssid": bssid,
+                    "vendor": self.get_vendor_from_bssid(bssid),
+                    "signal": None,
+                    "channel": None,
+                    "band": None
+                }
+                networks[current_ssid]["bssids"].append(current_bssid)
 
-            elif line.startswith("Signal"):
-                signal = line.split(":", 1)[1].strip().replace("%", "")
-                current["signal"] = int(signal)
+            elif line.startswith("Signal") and current_bssid:
+                val = self.extract_number(line)
+                current_bssid["signal"] = val
 
-            elif line.startswith("Channel"):
-                current["channel"] = int(line.split(":", 1)[1].strip())
+            elif line.startswith("Channel") and current_bssid:
+                channel = self.extract_number(line)
+                current_bssid["channel"] = channel
+                current_bssid["band"] = self.detect_band(channel)
 
-            elif line.startswith("Authentication"):
-                current["encryption"] = line.split(":", 1)[1].strip()
+        result = list(networks.values())
 
-        if current:
-            networks.append(current)
-
-        if not networks:
+        if not result:
             print("❌ No Wi-Fi networks detected.")
         else:
-            for i, n in enumerate(networks, 1):
-                print(f"{i}. {n['ssid']} | {n['encryption']} | Signal: {n['signal']}%")
+            for i, n in enumerate(result, 1):
+                print(f"{i}. {n['ssid']} | {n['encryption']} | APs: {len(n['bssids'])}")
 
-        return networks
+        return result
 
     # ===============================
-    # SIMULATION MODE (your original)
+    # HELPERS
+    # ===============================
+    def extract_number(self, text):
+        match = re.search(r"\d+", text)
+        return int(match.group()) if match else None
+
+    def detect_band(self, channel):
+        if channel is None:
+            return "Unknown"
+        if channel <= 14:
+            return "2.4 GHz"
+        return "5 GHz"
+
+    def normalize_encryption(self, auth):
+        auth = auth.lower()
+
+        if "open" in auth:
+            return "Open"
+        if "wpa3" in auth and "wpa2" in auth:
+            return "WPA2/WPA3"
+        if "wpa3" in auth:
+            return "WPA3"
+        if "wpa2" in auth:
+            return "WPA2"
+        if "wpa" in auth:
+            return "WPA"
+
+        return "Unknown"
+
+    # ===============================
+    # EXPORT FUNCTIONS
+    # ===============================
+    def export_json(self, networks):
+        path = os.path.join(self.export_dir, "wifi_scan.json")
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(networks, f, indent=4)
+        print(f"📄 JSON report saved: {path}")
+
+    def export_csv(self, networks):
+        path = os.path.join(self.export_dir, "wifi_scan.csv")
+
+        with open(path, "w", newline="", encoding="utf-8") as f:
+            writer = csv.writer(f)
+            writer.writerow([
+                "SSID", "Encryption", "BSSID", "Vendor", "Signal (%)", "Channel", "Band", "Last Seen"
+            ])
+
+            for net in networks:
+                for ap in net["bssids"]:
+                    writer.writerow([
+                        net["ssid"],
+                        net["encryption"],
+                        ap["bssid"],
+                        ap["vendor"],
+                        ap["signal"],
+                        ap["channel"],
+                        ap["band"],
+                        net["last_seen"]
+                    ])
+
+        print(f"📄 CSV report saved: {path}")
+
+    # ===============================
+    # SIMULATION MODE
     # ===============================
     def _scan_simulated(self):
-        networks = [
+        return [
             {
                 "ssid": "LabNet",
-                "bssid": "AA:BB:CC:DD:EE:FF",
-                "channel": 6,
-                "signal": -45,
                 "encryption": "WPA2",
-                "vendor": "Cisco",
-                "last_seen": datetime.now().strftime("%H:%M:%S")
-            },
-            {
-                "ssid": "Guest_WiFi",
-                "bssid": "11:22:33:44:55:66",
-                "channel": 1,
-                "signal": -65,
-                "encryption": "WPA",
-                "vendor": "TP-Link",
+                "bssids": [
+                    {
+                        "bssid": "AA:BB:CC:DD:EE:FF",
+                        "vendor": "Cisco",
+                        "signal": 78,
+                        "channel": 6,
+                        "band": "2.4 GHz"
+                    }
+                ],
                 "last_seen": datetime.now().strftime("%H:%M:%S")
             }
         ]
-
-        return networks
 
     # ===============================
     # VENDOR LOOKUP

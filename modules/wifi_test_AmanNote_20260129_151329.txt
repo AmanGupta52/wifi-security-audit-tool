@@ -1,0 +1,9 @@
+WiFi Security Test Report
+==================================================
+Date: 20260129_151329
+Target SSID: AmanNote
+Success: True
+Attempts: 1
+Duration: 6.74s
+Valid Password: Aman2345
+==================================================

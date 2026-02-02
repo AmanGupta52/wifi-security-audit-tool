@@ -1,0 +1,44 @@
+[
+    {
+        "ssid": "JioAirfiberA6",
+        "encryption": "WPA2",
+        "bssids": [
+            {
+                "bssid": "cc:54:fe:e3:cd:88",
+                "vendor": "Unknown",
+                "signal": 26,
+                "channel": 64,
+                "band": "5 GHz"
+            }
+        ],
+        "last_seen": "15:13:02"
+    },
+    {
+        "ssid": "AmanNote",
+        "encryption": "WPA2",
+        "bssids": [
+            {
+                "bssid": "3e:56:e3:30:c6:45",
+                "vendor": "Unknown",
+                "signal": 99,
+                "channel": 1,
+                "band": "2.4 GHz"
+            }
+        ],
+        "last_seen": "15:13:02"
+    },
+    {
+        "ssid": "Infinix NOTE 40 Pro 5G",
+        "encryption": "WPA3",
+        "bssids": [
+            {
+                "bssid": "4a:17:4d:98:5e:4c",
+                "vendor": "Unknown",
+                "signal": 88,
+                "channel": 1,
+                "band": "2.4 GHz"
+            }
+        ],
+        "last_seen": "15:13:02"
+    }
+]
