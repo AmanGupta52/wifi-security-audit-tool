@@ -1,17 +1,31 @@
 [
     {
-        "ssid": "JioAirfiberA6",
+        "ssid": "realme 9 Pro+",
+        "encryption": "WPA3",
+        "bssids": [
+            {
+                "bssid": "e2:06:bd:ea:ee:ab",
+                "vendor": "Unknown",
+                "signal": 81,
+                "channel": 5,
+                "band": "2.4 GHz"
+            }
+        ],
+        "last_seen": "15:42:05"
+    },
+    {
+        "ssid": "Excitel_1474997_2.4",
         "encryption": "WPA2",
         "bssids": [
             {
-                "bssid": "cc:54:fe:e3:cd:88",
+                "bssid": "a8:3a:48:3e:07:17",
                 "vendor": "Unknown",
-                "signal": 26,
-                "channel": 64,
+                "signal": 29,
+                "channel": 38,
                 "band": "5 GHz"
             }
         ],
-        "last_seen": "15:13:02"
+        "last_seen": "15:42:05"
     },
     {
         "ssid": "AmanNote",
@@ -20,25 +34,60 @@
             {
                 "bssid": "3e:56:e3:30:c6:45",
                 "vendor": "Unknown",
-                "signal": 99,
-                "channel": 1,
+                "signal": 98,
+                "channel": 5,
                 "band": "2.4 GHz"
             }
         ],
-        "last_seen": "15:13:02"
+        "last_seen": "15:42:05"
     },
     {
-        "ssid": "Infinix NOTE 40 Pro 5G",
-        "encryption": "WPA3",
+        "ssid": "Nisha",
+        "encryption": "WPA2",
         "bssids": [
             {
-                "bssid": "4a:17:4d:98:5e:4c",
+                "bssid": "d8:44:89:1e:ad:bf",
                 "vendor": "Unknown",
-                "signal": 88,
-                "channel": 1,
+                "signal": 29,
+                "channel": 0,
                 "band": "2.4 GHz"
             }
         ],
-        "last_seen": "15:13:02"
+        "last_seen": "15:42:05"
+    },
+    {
+        "ssid": "www.excitel.com",
+        "encryption": "WPA2",
+        "bssids": [
+            {
+                "bssid": "a8:3a:48:3e:07:1a",
+                "vendor": "Unknown",
+                "signal": 24,
+                "channel": 8,
+                "band": "2.4 GHz"
+            }
+        ],
+        "last_seen": "15:42:05"
+    },
+    {
+        "ssid": "JioAirfiberA6",
+        "encryption": "WPA2",
+        "bssids": [
+            {
+                "bssid": "20:b5:c6:5c:63:18",
+                "vendor": "Unknown",
+                "signal": 13,
+                "channel": 100,
+                "band": "5 GHz"
+            },
+            {
+                "bssid": "cc:54:fe:e3:cd:88",
+                "vendor": "Unknown",
+                "signal": 33,
+                "channel": 64,
+                "band": "5 GHz"
+            }
+        ],
+        "last_seen": "15:42:05"
     }
 ]

@@ -1,4 +1,8 @@
 SSID,Encryption,BSSID,Vendor,Signal (%),Channel,Band,Last Seen
-JioAirfiberA6,WPA2,cc:54:fe:e3:cd:88,Unknown,26,64,5 GHz,15:13:02
-AmanNote,WPA2,3e:56:e3:30:c6:45,Unknown,99,1,2.4 GHz,15:13:02
-Infinix NOTE 40 Pro 5G,WPA3,4a:17:4d:98:5e:4c,Unknown,88,1,2.4 GHz,15:13:02
+realme 9 Pro+,WPA3,e2:06:bd:ea:ee:ab,Unknown,81,5,2.4 GHz,15:42:05
+Excitel_1474997_2.4,WPA2,a8:3a:48:3e:07:17,Unknown,29,38,5 GHz,15:42:05
+AmanNote,WPA2,3e:56:e3:30:c6:45,Unknown,98,5,2.4 GHz,15:42:05
+Nisha,WPA2,d8:44:89:1e:ad:bf,Unknown,29,0,2.4 GHz,15:42:05
+www.excitel.com,WPA2,a8:3a:48:3e:07:1a,Unknown,24,8,2.4 GHz,15:42:05
+JioAirfiberA6,WPA2,20:b5:c6:5c:63:18,Unknown,13,100,5 GHz,15:42:05
+JioAirfiberA6,WPA2,cc:54:fe:e3:cd:88,Unknown,33,64,5 GHz,15:42:05

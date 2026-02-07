@@ -1,4 +1,4 @@
-# modules/network_scanner.py 
+# modules/network_scanner.py
 
 import subprocess
 import re
@@ -6,6 +6,8 @@ import yaml
 import os
 import json
 import csv
+import ctypes
+
 from datetime import datetime
 
 
@@ -34,13 +36,63 @@ class NetworkScanner:
         return networks
 
     # ===============================
+    # WINDOWS PREFLIGHT CHECK
+    # ===============================
+    def _windows_precheck(self):
+        # ---- Admin privilege check ----
+        try:
+            is_admin = ctypes.windll.shell32.IsUserAnAdmin()
+        except Exception:
+            is_admin = False
+
+        if not is_admin:
+            raise PermissionError(
+                "Administrator privileges required.\n"
+                "Right-click PowerShell → Run as administrator."
+            )
+
+        # ---- WLAN + Location permission check ----
+        result = subprocess.run(
+            ["netsh", "wlan", "show", "interfaces"],
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="ignore"
+        )
+
+        if "Location permission" in result.stdout:
+            # Optional: open settings page (cannot auto-enable)
+            # subprocess.run(["start", "ms-settings:privacy-location"], shell=True)
+
+            raise PermissionError(
+                "Location Services are disabled.\n"
+                "Enable:\n"
+                "Settings → Privacy & Security → Location\n"
+                "Also enable: 'Let desktop apps access location'."
+            )
+
+    # ===============================
     # REAL WINDOWS WIFI SCANNER
     # ===============================
     def _scan_windows_real(self):
+        # Mandatory precheck
+        self._windows_precheck()
+
         print("\n📡 Scanning real Wi-Fi networks (Windows)...\n")
 
         cmd = ["netsh", "wlan", "show", "networks", "mode=bssid"]
-        output = subprocess.check_output(cmd, shell=True, text=True, encoding="utf-8", errors="ignore")
+        result = subprocess.run(
+            cmd,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="ignore"
+        )
+
+        if result.returncode != 0:
+            raise RuntimeError("Wi-Fi scan failed. Ensure WLAN service is running.")
+
+        output = result.stdout
 
         networks = {}
         current_ssid = None
@@ -77,8 +129,7 @@ class NetworkScanner:
                 networks[current_ssid]["bssids"].append(current_bssid)
 
             elif line.startswith("Signal") and current_bssid:
-                val = self.extract_number(line)
-                current_bssid["signal"] = val
+                current_bssid["signal"] = self.extract_number(line)
 
             elif line.startswith("Channel") and current_bssid:
                 channel = self.extract_number(line)
@@ -105,9 +156,7 @@ class NetworkScanner:
     def detect_band(self, channel):
         if channel is None:
             return "Unknown"
-        if channel <= 14:
-            return "2.4 GHz"
-        return "5 GHz"
+        return "2.4 GHz" if channel <= 14 else "5 GHz"
 
     def normalize_encryption(self, auth):
         auth = auth.lower()

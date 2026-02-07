@@ -36,10 +36,10 @@ class WiFiConnector:
         self.platform = self._detect_platform()
         
         # Anti-detection settings
-        self.min_delay = 3
-        self.max_delay = 10
-        self.max_attempts_per_session = 10
-        self.long_pause_duration = 300  # 5 minutes
+        self.min_delay = 1
+        self.max_delay = 3
+        self.max_attempts_per_session = 100
+        self.long_pause_duration = 1  # 5 minutes
         
     def _detect_platform(self):
         """Detect OS for appropriate commands"""
